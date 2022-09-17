@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import SingleCard from "./components/SingleCard"
 
+// Card Images and match state
 const cardImages = [
   { src: "/img/helmet-1.png", matched: false },
   { src: "/img/potion-1.png", matched: false },
@@ -12,39 +13,48 @@ const cardImages = [
 ];
 
 function App() {
-  // hooks
+  // Hooks
   const [cards, setCards] = useState([]);
   const [turns, setTurns] = useState(0);
-  const [choiceOne, setChoiceone] = useState(null);
+  const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
   const [disabled, setDisabled] = useState(false);
   
-  // shuffle
+  // Shuffle cards function
   const shuffleCards = () => {
+    // Create cards board
     const shuffledCards = [...cardImages, ...cardImages]
       .sort(() => Math.random() - 0.5)
-      .map((card) => ({ ...card, id: Math.random() }));
+      .map((card, index) => ({ ...card, id: index }));
 
-    setChoiceone(null);
+    // Set choices to null
+    setChoiceOne(null);
     setChoiceTwo(null);
+    // Store the board in a state
     setCards(shuffledCards);
+    // Set the turn value
     setTurns(0);
   };
 
-  // define choice
+  // Define if it is first or second choice function
   const handleChoice = (card) => {
-    choiceOne ? setChoiceTwo(card) : setChoiceone(card)
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card)
   }
 
-  //compare 2 selected cards
+  // Compare 2 selected cards when the choices are made
   useEffect(() => {
     if (choiceOne && choiceTwo) {
       setDisabled(true)
+      // If card matches
       if (choiceOne.src === choiceTwo.src) {
+        // Iterate over the cards
         setCards(prevCards => {
           return prevCards.map(card => {
+            //Find card that matches
             if (card.src === choiceOne.src) {
+              // Assign true
               return {...card, matched: true}
+              // To all the other cards
             } else {
               return card
             }
@@ -55,26 +65,22 @@ function App() {
         setTimeout(() => resetTurn(), 1000)
         
       }
-    }  
-  
-    
+    }
   }, [choiceOne, choiceTwo])
   
 
-  // reset
-
+  // Reset function
   const resetTurn = () => {
-    setChoiceone(null)
+    setChoiceOne(null)
     setChoiceTwo(null)
     setTurns(prevTurns => prevTurns +1)
     setDisabled(false)
   }
  
 
-
   return (
     <div className="App">
-      <h1>Magic Match</h1>
+      <h1>Magic Memory</h1>
       <button onClick={shuffleCards}>New Game</button>
 
       <div className="card-grid">
